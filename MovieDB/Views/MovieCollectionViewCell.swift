@@ -13,9 +13,9 @@ class MovieCollectionViewCell: UICollectionViewCell {
     static var identifier = "PopularMovieCell"
     var onReuse: () -> Void = { }
     
-    private lazy var backdropPathImage: UIImageView = {
+    lazy var backdropPathImage: UIImageView = {
         let image = UIImageView()
-//        image.image = UIImage(named: "Spider")
+       // image.image = UIImage(systemName: "film")
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         image.layer.cornerRadius = 21
@@ -96,7 +96,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     
-    func updateViewFromModel(model: Movies, poster: UIImage){
+    func updateViewFromModel(model: Movies){
         
         let imageAttachment = NSTextAttachment()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
@@ -109,10 +109,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
         voteAverageLabel.attributedText = fullString
         releaseDateLabel.text = model.release_date
         
-        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        blurBackDropView.effect = blurEffect
+        let blurEffect = UIBlurEffect(style: .systemThickMaterialDark)
+//        blurBackDropView.effect = blurEffect
         
-        backdropPathImage.image = poster
+//        backdropPathImage.image = poster
     }
     
     private func setupUI(){

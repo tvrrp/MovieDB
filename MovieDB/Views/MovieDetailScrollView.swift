@@ -11,7 +11,7 @@ class MovieDetailScrollView: UIScrollView {
     
     private lazy var posterImageView: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "poster")
+        image.image = UIImage(systemName: "film")
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         image.layer.cornerRadius = 21

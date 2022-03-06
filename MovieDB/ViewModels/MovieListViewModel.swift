@@ -7,72 +7,75 @@
 
 import UIKit
 import SkeletonView
+import Kingfisher
 
 class MovieListViewModel: NSObject {
 
     var coordinator: MovieListCoordinator?
     weak var collectionView: UICollectionView?
 
-    var movieList = [Movies]()
-    var posterList = [UIImage]()
+    var movieList: [Movies?] = [Movies?](repeating: nil, count: 1)
     let networkHelper = NetworkHelper()
     let imageLoader = ImageLoader()
-    let moviesURL = URLFactory(moviePageNumber: nil)
 
     let title = "Movies"
+    let pageNumber = Array(1...32576)
 
 
-    func fetchMovies() {
+    func fetchMovies(ofIndex index: Int) {
 
-        networkHelper.requestMovies(with: moviesURL.apiCallURL) { [weak self] result in
+        let url = URLFactory(moviePageNumber: String(pageNumber[index]))
+
+        networkHelper.requestMovies(with: url.apiCallURL) { [weak self] result in
             switch result {
             case .failure(let error):
                 print(error)
+                print(url.apiCallURL)
             case .success(let result):
-                self?.movieList = result.results
-                //  print(self?.movieList)
+
+                if index == 0 {
+                    self?.movieList = result.results
+                } else {
+                    self?.movieList.append(contentsOf: result.results)
+                }
+
                 DispatchQueue.main.async {
                     self?.collectionView?.reloadData()
-                    self?.collectionView?.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(1))
                 }
             }
         }
     }
-    
-    private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell){
-        
-        var imagePoster = UIImage(systemName: "film")
-        
-        let adressToImage = URLToImage(apiUrl: model.backdrop_path)
 
+    private func cancelFetchMovies(ofIndex index: Int) {
+        let url = URLFactory(moviePageNumber: String(pageNumber[index]))
+        networkHelper.cancelRequestMovies(with: url.apiCallURL)
+    }
+
+    private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
+
+        var imagePoster = UIImage(systemName: "film")
+
+        guard let url = model.backdrop_path else {
+            cell.updateViewFromModel(model: model)
+            return
+        }
+        let adressToImage = URLToImage(apiUrl: url)
         guard let urlToImage = URL(string: adressToImage.urlToImage) else { return }
-        
-        let token = imageLoader.loadImage(urlToImage) { result in
-            do {
-                let image = try result.get()
-                imagePoster = image
-            } catch {
-                print(error)
-            }
-        }
-        
-        cell.onReuse = {
-            if let token = token {
-                self.imageLoader.cancelLoad(token)
-            }
-        }
-        cell.updateViewFromModel(model: model, poster: imagePoster!)
-        collectionView?.reloadItems(at: [indexPath])
+
+        cell.backdropPathImage.kf.setImage(with: urlToImage, placeholder: imagePoster)
+        cell.updateViewFromModel(model: model)
+
     }
 
     func movieCellTapped() {
         coordinator?.startDetailVCPresent()
     }
-    
+
     func setupCollectionView() {
         collectionView?.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
         collectionView?.dataSource = self
         collectionView?.delegate = self
+        collectionView?.prefetchDataSource = self
     }
 
 }
@@ -107,42 +110,43 @@ extension MovieListViewModel: SkeletonCollectionViewDataSource, UICollectionView
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCollectionViewCell.identifier, for: indexPath) as! MovieCollectionViewCell
-        if movieList.isEmpty {
-            return cell
-        } else {
-            let model = movieList[indexPath.row]
-            
-            var imagePoster = UIImage(systemName: "film")
-            
-            let adressToImage = URLToImage(apiUrl: model.backdrop_path)
 
-            guard let urlToImage = URL(string: adressToImage.urlToImage) else { return cell}
-            
-            DispatchQueue.main.async { [self] in
-                let token = imageLoader.loadImage(urlToImage) { result in
-                    do {
-                        let image = try result.get()
-                        imagePoster = image
-                    } catch {
-                        print(error)
-                    }
-                }
-                
-                cell.onReuse = {
-                    if let token = token {
-                        self.imageLoader.cancelLoad(token)
-                    }
-                }
-                cell.updateViewFromModel(model: model, poster: imagePoster!)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCollectionViewCell.identifier, for: indexPath) as! MovieCollectionViewCell
+
+        if let model = movieList[indexPath.row] {
+            self.loadImages(with: model, with: indexPath, with: cell)
+        } else {
+            if Int(indexPath.row / 19) == 0 {
+                fetchMovies(ofIndex: 0)
             }
-            
-            return cell
         }
+        return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         movieCellTapped()
     }
 
+}
+
+extension MovieListViewModel: UICollectionViewDataSourcePrefetching {
+
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+
+        for indexPath in indexPaths {
+
+            if indexPath.row < 19 {
+                fetchMovies(ofIndex: 1)
+            } else {
+                fetchMovies(ofIndex: Int(indexPath.row / 19) + 1)
+            }
+        }
+
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            cancelFetchMovies(ofIndex: indexPath.row)
+        }
+    }
 }
