@@ -8,22 +8,32 @@
 import UIKit
 
 class MovieDetailViewController: UIViewController {
+    
+    var scrollView: MovieDetailScrollView
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        setupUI()
+    }
+    
+    init() {
+        scrollView = MovieDetailScrollView()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillLayoutSubviews() {
+        scrollView.frame = view.frame
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    private func setupUI() {
+        view.backgroundColor = .systemBackground
+        view.addSubview(scrollView)
     }
-    */
 
 }

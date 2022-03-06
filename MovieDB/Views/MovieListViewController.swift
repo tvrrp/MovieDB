@@ -27,15 +27,26 @@ class MovieListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       // view.backgroundColor = .systemRed
-        viewModel.fetchMovies(collectionView: movieCollectionView)
+        
+        viewModel.fetchMovies()
+        
         navigationItem.title = viewModel.title
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Movies", style: .plain, target: self, action: #selector(buttonTappedAction))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Liked", style: .plain, target: self, action: #selector(buttonTappedAction))
+        
+        navigationItem.leftBarButtonItem?.imageInsets = .init(top: 0, left: 50, bottom: 0, right: 0)
+        
         setupUI()
     }
     
-    override func viewDidLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         movieCollectionView.frame = view.frame
+    }
+    
+    @objc func buttonTappedAction() {
+        
     }
     
 }
@@ -43,24 +54,19 @@ class MovieListViewController: UIViewController {
 extension MovieListViewController {
     
     func setupUI() {
-        movieCollectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
-        movieCollectionView.dataSource = viewModel
-       // movieCollectionView.delegate = viewModel as? UICollectionViewDelegate
+//        movieCollectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
+//        movieCollectionView.dataSource = viewModel
+//        movieCollectionView.delegate = viewModel
+        viewModel.collectionView = movieCollectionView
+        
         movieCollectionView.backgroundColor = .systemBackground
-//        movieCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        movieCollectionView.isSkeletonable = true
+        movieCollectionView.isUserInteractionDisabledWhenSkeletonIsActive = false
+        movieCollectionView.showAnimatedSkeleton(transition: .crossDissolve(0.25))
+      
         view.addSubview(movieCollectionView)
-//        setupLayout()
+        viewModel.setupCollectionView()
     }
-    
-//    private func setupLayout(){
-//        NSLayoutConstraint.activate([
-//            movieCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            movieCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-//            movieCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-//            movieCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//        ])
-//    }
-    
 }
 
 extension MovieListViewController {

@@ -21,3 +21,12 @@ struct URLFactory {
         self.moviePageNumber = "&page=" + (moviePageNumber ?? "")
     }
 }
+
+struct URLToImage {
+    private let urlPath = "https://image.tmdb.org/t/p/w400"
+    let urlToImage: String
+    
+    init(apiUrl: String) {
+        self.urlToImage = urlPath + apiUrl
+    }
+}

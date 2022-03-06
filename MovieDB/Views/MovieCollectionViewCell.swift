@@ -11,10 +11,11 @@ import SkeletonView
 class MovieCollectionViewCell: UICollectionViewCell {
 
     static var identifier = "PopularMovieCell"
+    var onReuse: () -> Void = { }
     
     private lazy var backdropPathImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "Spider")
+//        image.image = UIImage(named: "Spider")
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         image.layer.cornerRadius = 21
@@ -25,9 +26,9 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private lazy var blurBackDropView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        let blurEffectView = UIVisualEffectView()
         blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-//        blurEffectView.alpha = 0.8
+//        blurEffectView.isSkeletonable = true
         return blurEffectView
     }()
     
@@ -47,6 +48,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isSkeletonable = true
+        label.skeletonTextNumberOfLines = 3
         return label
     }()
     
@@ -64,6 +66,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isSkeletonable = true
+        label.skeletonTextNumberOfLines = 1
         return label
     }()
     
@@ -74,6 +77,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
         label.isSkeletonable = true
+        label.skeletonTextNumberOfLines = 1
         return label
     }()
     
@@ -86,11 +90,17 @@ class MovieCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onReuse()
+    }
     
-    func updateViewFromModel(model: Movies){
+    
+    func updateViewFromModel(model: Movies, poster: UIImage){
+        
         let imageAttachment = NSTextAttachment()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
-        imageAttachment.image = UIImage(systemName: "star")?.withConfiguration(imageConfig).withTintColor(.white)
+        imageAttachment.image = UIImage(systemName: "star.fill")?.withConfiguration(imageConfig).withTintColor(.white)
         let fullString = NSMutableAttributedString(string: "")
         fullString.append(NSAttributedString(attachment: imageAttachment))
         fullString.append(NSAttributedString(string: " \(model.vote_average)/10"))
@@ -98,6 +108,11 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = model.title
         voteAverageLabel.attributedText = fullString
         releaseDateLabel.text = model.release_date
+        
+        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        blurBackDropView.effect = blurEffect
+        
+        backdropPathImage.image = poster
     }
     
     private func setupUI(){

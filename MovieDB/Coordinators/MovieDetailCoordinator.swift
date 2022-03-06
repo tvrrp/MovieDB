@@ -10,14 +10,15 @@ import UIKit
 final class MovieDetailCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
     
-    var navigationController: UINavigationController
+    private let navigationController: UINavigationController
     
     init(navigationController: UINavigationController){
         self.navigationController = navigationController
     }
     
     func start() {
-        
+        let movieDetailViewContorller = MovieDetailViewController()
+        navigationController.pushViewController(movieDetailViewContorller, animated: true)
     }
     
     
