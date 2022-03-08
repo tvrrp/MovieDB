@@ -64,6 +64,12 @@ final class NetworkHelper {
         self.baseRequest(url: url, completion: completion)
     }
     
+    func requestMoviePost(with url: String, and completion: @escaping (Result<MoviePost, Error>) -> Void) {
+
+        let url = url
+        self.baseRequest(url: url, completion: completion)
+    }
+    
     func cancelRequestMovies(with url: String) {
 
         guard let url = URL(string: url) else {return}

@@ -24,8 +24,8 @@ final class MovieListCoordinator: Coordinator {
         navigationController.setViewControllers([movieListViewController], animated: false)
     }
     
-    func startDetailVCPresent(){
-        let movieDetailCoordinator = MovieDetailCoordinator(navigationController: navigationController)
+    func startDetailVCPresent(with post: Int){
+        let movieDetailCoordinator = MovieDetailCoordinator(navigationController: navigationController, post: post)
         childCoordinators.append(movieDetailCoordinator)
         movieDetailCoordinator.start()
     }

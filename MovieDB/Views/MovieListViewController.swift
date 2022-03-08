@@ -15,7 +15,6 @@ class MovieListViewController: UIViewController {
 
     init() {
         let movieCollectionViewLayout = UICollectionViewFlowLayout()
-//        movieCollectionView = UICollectionView(frame: .zero, collectionViewLayout: movieCollectionViewLayout)
         movieCollectionView = UICollectionView(frame: .zero, collectionViewLayout: movieCollectionViewLayout)
         super.init(nibName: nil, bundle: nil)
         movieCollectionView.collectionViewLayout = makeCollectionViewLayout()
@@ -28,10 +27,7 @@ class MovieListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-       // viewModel.fetchMovies()
-
         navigationItem.title = viewModel.title
-        navigationController?.navigationBar.prefersLargeTitles = true
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Movies", style: .plain, target: self, action: #selector(buttonTappedAction))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Liked", style: .plain, target: self, action: #selector(buttonTappedAction))

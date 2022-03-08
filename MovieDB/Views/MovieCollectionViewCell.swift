@@ -11,11 +11,9 @@ import SkeletonView
 class MovieCollectionViewCell: UICollectionViewCell {
 
     static var identifier = "PopularMovieCell"
-    var onReuse: () -> Void = { }
     
     lazy var backdropPathImage: UIImageView = {
         let image = UIImageView()
-       // image.image = UIImage(systemName: "film")
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         image.layer.cornerRadius = 21
@@ -24,11 +22,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
         return image
     }()
     
-    private lazy var blurBackDropView: UIVisualEffectView = {
+    private var blurBackDropView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
         let blurEffectView = UIVisualEffectView()
         blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-//        blurEffectView.isSkeletonable = true
         return blurEffectView
     }()
     
@@ -92,7 +89,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        onReuse()
     }
     
     
@@ -108,11 +104,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = model.title
         voteAverageLabel.attributedText = fullString
         releaseDateLabel.text = model.release_date
-        
-        let blurEffect = UIBlurEffect(style: .systemThickMaterialDark)
-//        blurBackDropView.effect = blurEffect
-        
-//        backdropPathImage.image = poster
     }
     
     private func setupUI(){

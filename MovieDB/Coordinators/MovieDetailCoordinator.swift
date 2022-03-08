@@ -12,14 +12,19 @@ final class MovieDetailCoordinator: Coordinator {
     
     private let navigationController: UINavigationController
     
-    init(navigationController: UINavigationController){
+    let post: Int
+    
+    init(navigationController: UINavigationController, post: Int){
         self.navigationController = navigationController
+        self.post = post
     }
     
     func start() {
         let movieDetailViewContorller = MovieDetailViewController()
+        let movieDetailViewModel = MovieDetailViewModel(post: post)
+        movieDetailViewModel.coordinator = self
+        movieDetailViewContorller.viewModel = movieDetailViewModel
         navigationController.pushViewController(movieDetailViewContorller, animated: true)
     }
-    
     
 }

@@ -16,13 +16,16 @@ class MovieListViewModel: NSObject {
 
     var movieList: [Movies?] = [Movies?](repeating: nil, count: 1)
     let networkHelper = NetworkHelper()
-    let imageLoader = ImageLoader()
 
     let title = "Movies"
-    let pageNumber = Array(1...32576)
+    let pageNumber = Array(1...500)
 
 
     func fetchMovies(ofIndex index: Int) {
+        
+        if index > 499 {
+            return
+        }
 
         let url = URLFactory(moviePageNumber: String(pageNumber[index]))
 
@@ -47,13 +50,18 @@ class MovieListViewModel: NSObject {
     }
 
     private func cancelFetchMovies(ofIndex index: Int) {
+        
+        if index > 499 {
+            return
+        }
+        
         let url = URLFactory(moviePageNumber: String(pageNumber[index]))
         networkHelper.cancelRequestMovies(with: url.apiCallURL)
     }
 
     private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
 
-        var imagePoster = UIImage(systemName: "film")
+        let imagePoster = UIImage(systemName: "film")
 
         guard let url = model.backdrop_path else {
             cell.updateViewFromModel(model: model)
@@ -62,13 +70,14 @@ class MovieListViewModel: NSObject {
         let adressToImage = URLToImage(apiUrl: url)
         guard let urlToImage = URL(string: adressToImage.urlToImage) else { return }
 
-        cell.backdropPathImage.kf.setImage(with: urlToImage, placeholder: imagePoster)
+        cell.backdropPathImage.kf.setImage(with: urlToImage, placeholder: imagePoster, options: [.cacheSerializer(FormatIndicatedCacheSerializer.jpeg)])
         cell.updateViewFromModel(model: model)
 
     }
 
-    func movieCellTapped() {
-        coordinator?.startDetailVCPresent()
+    func movieCellTapped(with index: Int) {
+        guard let post = movieList[index]?.id else { return }
+        coordinator?.startDetailVCPresent(with: post)
     }
 
     func setupCollectionView() {
@@ -124,7 +133,7 @@ extension MovieListViewModel: SkeletonCollectionViewDataSource, UICollectionView
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        movieCellTapped()
+        movieCellTapped(with: indexPath.row)
     }
 
 }
