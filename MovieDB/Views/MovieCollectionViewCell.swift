@@ -82,7 +82,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     
-    func updateViewFromModel(model: Movies){
+    func updateViewFromModel(model: Movies, poster: UIImage){
         
         let imageAttachment = NSTextAttachment()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
@@ -94,6 +94,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = model.title
         voteAverageLabel.attributedText = fullString
         releaseDateLabel.text = model.release_date
+        backdropPathImage.image = poster
     }
     
     private func setupUI(){

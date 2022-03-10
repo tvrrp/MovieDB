@@ -9,6 +9,7 @@ import UIKit
 
 final class MovieDetailCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
+    var parentCoordinator: MovieListCoordinator?
     
     private let navigationController: UINavigationController
     
@@ -27,4 +28,7 @@ final class MovieDetailCoordinator: Coordinator {
         navigationController.pushViewController(movieDetailViewContorller, animated: true)
     }
     
+    func didFinishMovieDetail(){
+        parentCoordinator?.childDidFinish(self)
+    }
 }

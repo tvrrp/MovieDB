@@ -33,7 +33,6 @@ final class NetworkHelper {
 
         let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
             
-          //  print("Data task: \(data)")
             
             if let error = error {
                 completion(.failure(error))
@@ -54,8 +53,8 @@ final class NetworkHelper {
                 print(error)
             }
         }
-        dataTask.resume()
         dataTasks.append(dataTask)
+        dataTask.resume()
     }
 
     func requestMovies(with url: String, and completion: @escaping (Result<MovieModel, Error>) -> Void) {

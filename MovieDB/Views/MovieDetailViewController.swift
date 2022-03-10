@@ -30,6 +30,10 @@ class MovieDetailViewController: UIViewController {
         viewModel.fetchPost()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.viewDidDisappear()
+    }
 
     private func setupUI() {
         view.backgroundColor = .secondarySystemBackground

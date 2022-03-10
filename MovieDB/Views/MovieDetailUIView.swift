@@ -186,15 +186,24 @@ class MovieDetailUIView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateViews(with model: MoviePost){
-//        posterImageView.image = model
-        movieRuntimeValueLabel.text = String(model.runtime)
-        movieGenresValueLabel.text = model.genres[0].name
-        movieVoteValueLabel.text = String(model.vote_average)
-        movieTitleLabel.text = model.title
-        movieTaglineLabel.text = model.tagline
-        movieOverviewLabel.text = model.overview
+    func updateViews(model: MoviePost, poster: UIImage){
+        DispatchQueue.main.async { [self] in
+            movieRuntimeValueLabel.text = runtimeValueFromInt(minutes: model.runtime)
+            movieGenresValueLabel.text = model.genres[0].name
+            movieVoteValueLabel.text = String(model.vote_average)
+            movieTitleLabel.text = model.title
+            movieTaglineLabel.text = model.tagline
+            movieOverviewLabel.text = model.overview
+            posterImageView.image = poster
+        }
         
+    }
+    
+    private func runtimeValueFromInt(minutes: Int) -> String {
+        print(minutes)
+        let h = minutes / 60
+        let min = minutes % 60
+        return "\(h) ч \(min) мин"
     }
 
 }

@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class MovieListViewModel: NSObject {
+final class MovieListViewModel: NSObject {
 
     var coordinator: MovieListCoordinator?
     weak var collectionView: UICollectionView?
@@ -21,7 +21,7 @@ class MovieListViewModel: NSObject {
 
 
     func fetchMovies(ofIndex index: Int) {
-        
+
         if index > 499 {
             return
         }
@@ -42,42 +42,58 @@ class MovieListViewModel: NSObject {
                 }
 
                 DispatchQueue.main.async {
-                    self?.collectionView?.reloadData()
+                    let start = ((self?.pageNumber[index])! * 20) - 20
+                    let end = (self?.movieList.count)!
+                    var indexPaths = [IndexPath]()
+                    
+                    for item in stride(from: start, to: end, by: 1) {
+                        let indexPath = IndexPath(row: item, section: 0)
+                        indexPaths.append(indexPath)
+                    }
+                    
+                    self?.collectionView?.insertItems(at: indexPaths)
                 }
             }
         }
     }
 
     private func cancelFetchMovies(ofIndex index: Int) {
-        
+
         if index > 499 {
             return
         }
-        
+
         let url = URLFactory(moviePageNumber: String(pageNumber[index]))
         networkHelper.cancelRequestMovies(with: url.apiCallURL)
     }
-
-    private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
-
-        let imagePoster = UIImage(systemName: "film")
-
-        guard let url = model.backdrop_path else {
-            cell.updateViewFromModel(model: model)
-            return
+    
+    private func getImageURL(index: Int) -> String {
+        guard let url = movieList[index]?.backdrop_path else {
+            return ""
         }
         let adressToImage = URLToImage(apiUrl: url)
-        guard let urlToImage = URL(string: adressToImage.urlToImage) else { return }
-
-        cell.backdropPathImage.kf.setImage(with: urlToImage, placeholder: imagePoster, options: [.cacheSerializer(FormatIndicatedCacheSerializer.jpeg)])
-        cell.updateViewFromModel(model: model)
-
+        return adressToImage.urlToImage
     }
-    
-    
-    private func loadImages2(){
-        
+
+    private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
+        guard let urlToImage = URL(string: getImageURL(index: indexPath.row)) else { return }
+
+        KingfisherManager.shared.retrieveImage(with: urlToImage) { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+                cell.updateViewFromModel(model: model, poster: UIImage(systemName: "film")!)
+            case .success(let image):
+                cell.updateViewFromModel(model: model, poster: image.image)
+            }
+        }
     }
+
+    private func prefetchImages(with indexPaths: [IndexPath]) {
+        let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
+        ImagePrefetcher(urls: urls).start()
+    }
+
 
     func movieCellTapped(with index: Int) {
         guard let post = movieList[index]?.id else { return }
@@ -86,6 +102,7 @@ class MovieListViewModel: NSObject {
 
     func setupCollectionView() {
         collectionView?.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
+        collectionView?.showsVerticalScrollIndicator = false
         collectionView?.dataSource = self
         collectionView?.delegate = self
         collectionView?.prefetchDataSource = self
@@ -96,11 +113,8 @@ class MovieListViewModel: NSObject {
 extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if movieList.isEmpty {
-            return 20
-        } else {
-            return movieList.count
-        }
+        
+        return movieList.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -135,12 +149,14 @@ extension MovieListViewModel: UICollectionViewDataSourcePrefetching {
                 fetchMovies(ofIndex: Int(indexPath.row / 19) + 1)
             }
         }
-
+        prefetchImages(with: indexPaths)
     }
 
     func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
             cancelFetchMovies(ofIndex: indexPath.row)
         }
+        let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
+        ImagePrefetcher(resources: urls).stop()
     }
 }

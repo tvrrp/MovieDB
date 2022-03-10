@@ -26,8 +26,17 @@ final class MovieListCoordinator: Coordinator {
     
     func startDetailVCPresent(with post: Int){
         let movieDetailCoordinator = MovieDetailCoordinator(navigationController: navigationController, post: post)
+        movieDetailCoordinator.parentCoordinator = self
         childCoordinators.append(movieDetailCoordinator)
         movieDetailCoordinator.start()
+    }
+    
+    func childDidFinish(_ childCoordinator: Coordinator){
+        if let index = childCoordinators.firstIndex(where: { coordinator -> Bool in
+            return childCoordinator === coordinator
+        }) {
+            childCoordinators.remove(at: index)
+        }
     }
     
 }
