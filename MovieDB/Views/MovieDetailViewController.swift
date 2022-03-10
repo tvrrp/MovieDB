@@ -36,6 +36,7 @@ class MovieDetailViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         viewModel.movieDetailView = contentView
+        viewModel.movieDetailScrollView = scrollView
         setupConstraints()
     }
     private func setupConstraints() {

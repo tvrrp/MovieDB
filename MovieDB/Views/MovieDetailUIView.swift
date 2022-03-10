@@ -15,7 +15,6 @@ class MovieDetailUIView: UIView {
         image.clipsToBounds = true
         image.layer.cornerRadius = 21
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.isSkeletonable = true
         return image
     }()
     
@@ -162,7 +161,7 @@ class MovieDetailUIView: UIView {
         return stackView
     }()
     
-    lazy var lineUIView: LineUiView = {
+    private lazy var lineUIView: LineUiView = {
         let view = LineUiView()
         view.backgroundColor = .secondarySystemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -246,7 +245,7 @@ extension MovieDetailUIView {
     }
 }
 
-class LineUiView: UIView {
+fileprivate class LineUiView: UIView {
     
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()

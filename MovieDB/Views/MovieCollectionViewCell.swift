@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SkeletonView
 
 class MovieCollectionViewCell: UICollectionViewCell {
 
@@ -18,7 +17,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         image.clipsToBounds = true
         image.layer.cornerRadius = 21
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.isSkeletonable = true
         return image
     }()
     
@@ -33,7 +31,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, filmInfoStackView])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.isSkeletonable = true
         return stackView
     }()
     
@@ -44,15 +41,12 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.isSkeletonable = true
-        label.skeletonTextNumberOfLines = 3
         return label
     }()
     
     private lazy var filmInfoStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [voteAverageLabel, releaseDateLabel])
         stackView.axis = .horizontal
-        stackView.isSkeletonable = true
         return stackView
     }()
     
@@ -62,8 +56,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.textColor = .white
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.isSkeletonable = true
-        label.skeletonTextNumberOfLines = 1
         return label
     }()
     
@@ -73,8 +65,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
-        label.isSkeletonable = true
-        label.skeletonTextNumberOfLines = 1
         return label
     }()
     

@@ -12,6 +12,7 @@ class MovieDetailViewModel {
     var coordinator: MovieDetailCoordinator?
     var post: Int
     weak var movieDetailView: MovieDetailUIView?
+    weak var movieDetailScrollView: UIScrollView?
     
     let networkHelper = NetworkHelper()
     
@@ -32,7 +33,6 @@ class MovieDetailViewModel {
                 DispatchQueue.main.async {
                     
                     guard let urlToPoster = URL(string: URLToPosterPath(apiUrl: result.poster_path).urlToImage) else {return}
-                    self?.movieDetailView?.posterImageView.kf.indicatorType = .activity
                     self?.movieDetailView?.posterImageView.kf.setImage(with: urlToPoster, completionHandler: { (image) in
                         self?.movieDetailView?.updateViews(with: result)
                     })

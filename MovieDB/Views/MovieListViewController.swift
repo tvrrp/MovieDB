@@ -56,8 +56,6 @@ extension MovieListViewController {
         viewModel.collectionView = movieCollectionView
 
         movieCollectionView.backgroundColor = .systemBackground
-        movieCollectionView.isSkeletonable = true
-        movieCollectionView.isUserInteractionDisabledWhenSkeletonIsActive = false
 
         view.addSubview(movieCollectionView)
         viewModel.setupCollectionView()

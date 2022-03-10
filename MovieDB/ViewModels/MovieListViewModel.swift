@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SkeletonView
 import Kingfisher
 
 class MovieListViewModel: NSObject {
@@ -74,6 +73,11 @@ class MovieListViewModel: NSObject {
         cell.updateViewFromModel(model: model)
 
     }
+    
+    
+    private func loadImages2(){
+        
+    }
 
     func movieCellTapped(with index: Int) {
         guard let post = movieList[index]?.id else { return }
@@ -89,26 +93,7 @@ class MovieListViewModel: NSObject {
 
 }
 
-extension MovieListViewModel: SkeletonCollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> ReusableCellIdentifier {
-        return MovieCollectionViewCell.identifier
-    }
-
-    func collectionSkeletonView(_ skeletonView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
-    }
-
-    func collectionSkeletonView(_ skeletonView: UICollectionView, skeletonCellForItemAt indexPath: IndexPath) -> UICollectionViewCell? {
-        let cell = skeletonView.dequeueReusableCell(withReuseIdentifier: MovieCollectionViewCell.identifier, for: indexPath) as! MovieCollectionViewCell
-        cell.isSkeletonable = true
-        return cell
-    }
-
-    func collectionSkeletonView(_ skeletonView: UICollectionView, prepareCellForSkeleton cell: UICollectionViewCell, at indexPath: IndexPath) {
-        let cell = cell as? MovieCollectionViewCell
-        cell?.isSkeletonable = true
-    }
+extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if movieList.isEmpty {
