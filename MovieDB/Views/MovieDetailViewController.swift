@@ -11,6 +11,13 @@ class MovieDetailViewController: UIViewController {
     
     var viewModel: MovieDetailViewModel!
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activity = UIActivityIndicatorView(style: .large)
+        activity.hidesWhenStopped = true
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        return activity
+    }()
+    
     var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -26,21 +33,42 @@ class MovieDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        viewModel.fetchPost()
+        displayActivityIndicator()
+        
+        viewModel.fetchPost() { [weak self] (success) -> Void in
+            if success {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    self?.setupUI()
+                    self?.viewModel.loadImage()
+                    self?.activityIndicator.stopAnimating()
+                })
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         viewModel.viewDidDisappear()
     }
+    
+    private func displayActivityIndicator(){
+        view.backgroundColor = .secondarySystemBackground
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        
+    }
+    
 
     private func setupUI() {
-        view.backgroundColor = .secondarySystemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         viewModel.movieDetailView = contentView
-        viewModel.movieDetailScrollView = scrollView
         setupConstraints()
     }
     private func setupConstraints() {

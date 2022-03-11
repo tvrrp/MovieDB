@@ -5,24 +5,25 @@
 //  Created by Damir Yackupov on 05.03.2022.
 //
 
+import Combine
 import UIKit
-import Kingfisher
+import Nuke
 
 final class MovieDetailViewModel {
 
     var coordinator: MovieDetailCoordinator?
     var post: Int
     weak var movieDetailView: MovieDetailUIView?
-    weak var movieDetailScrollView: UIScrollView?
 
     let networkHelper = NetworkHelper()
     var moviePost: MoviePost?
+
 
     init(post: Int) {
         self.post = post
     }
 
-    func fetchPost() {
+    func fetchPost(completion: @escaping (_ success: Bool) -> Void) {
 
         let url = URLToPost(moviePageNumber: String(post))
 
@@ -32,27 +33,24 @@ final class MovieDetailViewModel {
                 print(error)
             case .success(let result):
                 self?.moviePost = result
-                self?.loadImage()
+                completion(true)
             }
         }
     }
 
-    private func loadImage() {
+    func loadImage() {
         guard let url = moviePost?.poster_path else {
             return
         }
         let adressToImage = URLToPosterPath(apiUrl: url)
         guard let urlToImage = URL(string: adressToImage.urlToImage) else { return }
-
-        KingfisherManager.shared.retrieveImage(with: urlToImage) { result in
-            switch result {
-            case .failure(let error):
-                print(error)
-                self.movieDetailView?.updateViews(model: self.moviePost!, poster: UIImage(systemName: "film")!)
-            case .success(let image):
-                self.movieDetailView?.updateViews(model: self.moviePost!, poster: image.image)
-            }
-        }
+        
+        movieDetailView?.updateViews(model: self.moviePost!)
+        
+        let options = ImageLoadingOptions(
+            transition: .fadeIn(duration: 0.33)
+        )
+        Nuke.loadImage(with: urlToImage, options: options, into: movieDetailView!.posterImageView)
     }
     
     func viewDidDisappear(){

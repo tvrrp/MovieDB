@@ -26,7 +26,6 @@ class MovieListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         navigationItem.title = viewModel.title
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Movies", style: .plain, target: self, action: #selector(buttonTappedAction))
@@ -40,6 +39,16 @@ class MovieListViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         movieCollectionView.frame = view.frame
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.viewWillAppear()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel.viewWillDisappear()
+    }
 
     @objc func buttonTappedAction() {
 
@@ -50,16 +59,14 @@ class MovieListViewController: UIViewController {
 extension MovieListViewController {
 
     func setupUI() {
-//        movieCollectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
-//        movieCollectionView.dataSource = viewModel
-//        movieCollectionView.delegate = viewModel
         viewModel.collectionView = movieCollectionView
-
+        movieCollectionView.showsVerticalScrollIndicator = false
         movieCollectionView.backgroundColor = .systemBackground
 
         view.addSubview(movieCollectionView)
         viewModel.setupCollectionView()
     }
+    
 }
 
 extension MovieListViewController {
@@ -74,7 +81,7 @@ extension MovieListViewController {
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalWidth(0.5)
+                heightDimension: .fractionalWidth(0.7)
             ),
             subitem: item,
             count: 2

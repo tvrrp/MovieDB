@@ -126,7 +126,7 @@ class MovieDetailUIView: UIView {
         return stackView
     }()
     
-    lazy var movieInfoStackView: UIStackView = {
+    private lazy var movieInfoStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [movieRuntimeCardStackView, movieGenresCardStackView, movieVoteCardStackView])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -152,7 +152,7 @@ class MovieDetailUIView: UIView {
         return label
     }()
     
-    lazy var movieTitleStackView: UIStackView = {
+    private lazy var movieTitleStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [movieTitleLabel, movieTaglineLabel])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -168,7 +168,7 @@ class MovieDetailUIView: UIView {
         return view
     }()
     
-    lazy var movieOverviewLabel: UILabel = {
+    private lazy var movieOverviewLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 21, weight: .regular)
         label.lineBreakMode = .byWordWrapping
@@ -186,7 +186,7 @@ class MovieDetailUIView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateViews(model: MoviePost, poster: UIImage){
+    func updateViews(model: MoviePost){
         DispatchQueue.main.async { [self] in
             movieRuntimeValueLabel.text = runtimeValueFromInt(minutes: model.runtime)
             movieGenresValueLabel.text = model.genres[0].name
@@ -194,13 +194,11 @@ class MovieDetailUIView: UIView {
             movieTitleLabel.text = model.title
             movieTaglineLabel.text = model.tagline
             movieOverviewLabel.text = model.overview
-            posterImageView.image = poster
         }
         
     }
     
     private func runtimeValueFromInt(minutes: Int) -> String {
-        print(minutes)
         let h = minutes / 60
         let min = minutes % 60
         return "\(h) ч \(min) мин"

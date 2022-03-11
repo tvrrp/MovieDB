@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8D6689FF27D522BC00FC4A15 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 8D6689FE27D522BC00FC4A15 /* Kingfisher */; };
 		8D789B9027D249C800A81869 /* MovieListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D789B8F27D249C800A81869 /* MovieListCoordinator.swift */; };
 		8D789B9527D24A9500A81869 /* MovieListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D789B9427D24A9500A81869 /* MovieListViewController.swift */; };
 		8D789B9A27D24E7000A81869 /* MovieListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D789B9927D24E7000A81869 /* MovieListViewModel.swift */; };
@@ -17,6 +16,7 @@
 		8D8C737627D3399E0082BD90 /* MovieDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C737527D3399E0082BD90 /* MovieDetailViewModel.swift */; };
 		8D8C737B27D339AE0082BD90 /* MovieDetailCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C737A27D339AE0082BD90 /* MovieDetailCoordinator.swift */; };
 		8D8C738327D387600082BD90 /* MovieDetailUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C738227D3875F0082BD90 /* MovieDetailUIView.swift */; };
+		8DBF7A8D27DB6BD80098AE37 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 8DBF7A8C27DB6BD80098AE37 /* Nuke */; };
 		8DEC0B4527CD858A00BD7AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC0B4427CD858A00BD7AE0 /* AppDelegate.swift */; };
 		8DEC0B4727CD858A00BD7AE0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC0B4627CD858A00BD7AE0 /* SceneDelegate.swift */; };
 		8DEC0B4C27CD858A00BD7AE0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8DEC0B4A27CD858A00BD7AE0 /* Main.storyboard */; };
@@ -81,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D6689FF27D522BC00FC4A15 /* Kingfisher in Frameworks */,
+				8DBF7A8D27DB6BD80098AE37 /* Nuke in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +231,7 @@
 			);
 			name = MovieDB;
 			packageProductDependencies = (
-				8D6689FE27D522BC00FC4A15 /* Kingfisher */,
+				8DBF7A8C27DB6BD80098AE37 /* Nuke */,
 			);
 			productName = MovieDB;
 			productReference = 8DEC0B4127CD858A00BD7AE0 /* MovieDB.app */;
@@ -305,7 +305,7 @@
 			);
 			mainGroup = 8DEC0B3827CD858A00BD7AE0;
 			packageReferences = (
-				8D6689FD27D522BB00FC4A15 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				8DBF7A8B27DB6BD80098AE37 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 8DEC0B4227CD858A00BD7AE0 /* Products */;
 			projectDirPath = "";
@@ -703,21 +703,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8D6689FD27D522BB00FC4A15 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		8DBF7A8B27DB6BD80098AE37 /* XCRemoteSwiftPackageReference "Nuke" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			repositoryURL = "https://github.com/kean/Nuke.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.2.0;
+				minimumVersion = 10.7.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8D6689FE27D522BC00FC4A15 /* Kingfisher */ = {
+		8DBF7A8C27DB6BD80098AE37 /* Nuke */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8D6689FD27D522BB00FC4A15 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
+			package = 8DBF7A8B27DB6BD80098AE37 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
 		};
 /* End XCSwiftPackageProductDependency section */
 

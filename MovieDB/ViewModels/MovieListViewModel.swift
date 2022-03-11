@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Kingfisher
+import Nuke
 
 final class MovieListViewModel: NSObject {
 
@@ -15,6 +15,7 @@ final class MovieListViewModel: NSObject {
 
     var movieList: [Movies?] = [Movies?](repeating: nil, count: 1)
     let networkHelper = NetworkHelper()
+    let prefetcher = ImagePrefetcher()
 
     let title = "Movies"
     let pageNumber = Array(1...500)
@@ -50,7 +51,6 @@ final class MovieListViewModel: NSObject {
                         let indexPath = IndexPath(row: item, section: 0)
                         indexPaths.append(indexPath)
                     }
-                    
                     self?.collectionView?.insertItems(at: indexPaths)
                 }
             }
@@ -76,22 +76,18 @@ final class MovieListViewModel: NSObject {
     }
 
     private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
+        
         guard let urlToImage = URL(string: getImageURL(index: indexPath.row)) else { return }
-
-        KingfisherManager.shared.retrieveImage(with: urlToImage) { result in
-            switch result {
-            case .failure(let error):
-                print(error)
-                cell.updateViewFromModel(model: model, poster: UIImage(systemName: "film")!)
-            case .success(let image):
-                cell.updateViewFromModel(model: model, poster: image.image)
-            }
-        }
+        cell.updateViewFromModel(model: model)
+        let options = ImageLoadingOptions(
+            transition: .fadeIn(duration: 0.33)
+        )
+        Nuke.loadImage(with: urlToImage, options: options, into: cell.backdropPathImage)
     }
 
     private func prefetchImages(with indexPaths: [IndexPath]) {
         let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
-        ImagePrefetcher(urls: urls).start()
+        prefetcher.startPrefetching(with: urls)
     }
 
 
@@ -102,10 +98,17 @@ final class MovieListViewModel: NSObject {
 
     func setupCollectionView() {
         collectionView?.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
-        collectionView?.showsVerticalScrollIndicator = false
         collectionView?.dataSource = self
         collectionView?.delegate = self
         collectionView?.prefetchDataSource = self
+    }
+    
+    func viewWillAppear() {
+        prefetcher.isPaused = false
+    }
+    
+    func viewWillDisappear(){
+        prefetcher.isPaused = true
     }
 
 }
@@ -157,6 +160,6 @@ extension MovieListViewModel: UICollectionViewDataSourcePrefetching {
             cancelFetchMovies(ofIndex: indexPath.row)
         }
         let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
-        ImagePrefetcher(resources: urls).stop()
+        prefetcher.stopPrefetching(with: urls)
     }
 }

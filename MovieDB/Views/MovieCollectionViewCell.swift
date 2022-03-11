@@ -20,13 +20,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         return image
     }()
     
-    private var blurBackDropView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        let blurEffectView = UIVisualEffectView()
-        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-        return blurEffectView
-    }()
-    
     private lazy var labelsStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, filmInfoStackView])
         stackView.axis = .vertical
@@ -37,7 +30,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .white
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -53,7 +45,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private lazy var voteAverageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .thin)
-        label.textColor = .white
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -62,7 +53,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private lazy var releaseDateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .thin)
-        label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
         return label
@@ -82,11 +72,11 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     
-    func updateViewFromModel(model: Movies, poster: UIImage){
+    func updateViewFromModel(model: Movies){
         
         let imageAttachment = NSTextAttachment()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
-        imageAttachment.image = UIImage(systemName: "star.fill")?.withConfiguration(imageConfig).withTintColor(.white)
+        imageAttachment.image = UIImage(systemName: "star.fill")?.withConfiguration(imageConfig).withTintColor(.systemYellow)
         let fullString = NSMutableAttributedString(string: "")
         fullString.append(NSAttributedString(attachment: imageAttachment))
         fullString.append(NSAttributedString(string: " \(model.vote_average)/10"))
@@ -94,14 +84,11 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = model.title
         voteAverageLabel.attributedText = fullString
         releaseDateLabel.text = model.release_date
-        backdropPathImage.image = poster
     }
     
     private func setupUI(){
         
-        addSubview(backdropPathImage)
-        backdropPathImage.addSubview(blurBackDropView)
-        blurBackDropView.contentView.addSubview(labelsStackView)
+        [backdropPathImage, labelsStackView].forEach {contentView.addSubview($0)}
         setupConstraints()
     }
     
@@ -110,21 +97,14 @@ class MovieCollectionViewCell: UICollectionViewCell {
             backdropPathImage.topAnchor.constraint(equalTo: topAnchor),
             backdropPathImage.leadingAnchor.constraint(equalTo: leadingAnchor),
             backdropPathImage.trailingAnchor.constraint(equalTo: trailingAnchor),
-            backdropPathImage.bottomAnchor.constraint(equalTo: bottomAnchor),
+            backdropPathImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.7)
         ])
         
         NSLayoutConstraint.activate([
-            blurBackDropView.topAnchor.constraint(equalTo: backdropPathImage.centerYAnchor, constant: 20),
-            blurBackDropView.leadingAnchor.constraint(equalTo: backdropPathImage.leadingAnchor),
-            blurBackDropView.trailingAnchor.constraint(equalTo: backdropPathImage.trailingAnchor),
-            blurBackDropView.bottomAnchor.constraint(equalTo: backdropPathImage.bottomAnchor),
-        ])
-        
-        NSLayoutConstraint.activate([
-            labelsStackView.topAnchor.constraint(equalTo: blurBackDropView.topAnchor),
-            labelsStackView.leadingAnchor.constraint(equalTo: blurBackDropView.leadingAnchor, constant: 10),
-            labelsStackView.trailingAnchor.constraint(equalTo: blurBackDropView.trailingAnchor, constant: -10),
-            labelsStackView.bottomAnchor.constraint(equalTo: blurBackDropView.bottomAnchor, constant: -10),
+            labelsStackView.topAnchor.constraint(equalTo: backdropPathImage.bottomAnchor),
+            labelsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            labelsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            labelsStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
         ])
     }
 }
