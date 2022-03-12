@@ -8,8 +8,9 @@
 import UIKit
 
 final class MovieDetailCoordinator: Coordinator {
+
     private(set) var childCoordinators: [Coordinator] = []
-    var parentCoordinator: MovieListCoordinator?
+    weak var parentCoordinator: Coordinator?
     
     private let navigationController: UINavigationController
     private let coreDataManager = CoreDataManager()
@@ -32,4 +33,9 @@ final class MovieDetailCoordinator: Coordinator {
     func didFinishMovieDetail(){
         parentCoordinator?.childDidFinish(self)
     }
+    
+    func childDidFinish(_ childCoordinator: Coordinator) {
+    }
+    
+    
 }

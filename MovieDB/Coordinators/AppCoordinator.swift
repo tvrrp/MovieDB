@@ -9,11 +9,12 @@ import UIKit
 
 protocol Coordinator: class {
     var childCoordinators: [Coordinator] { get }
-
     func start()
+    func childDidFinish(_ childCoordinator: Coordinator)
 }
 
-final class AppCoordinator: Coordinator {
+final class AppCoordinator: NSObject, Coordinator, UINavigationControllerDelegate {
+
     private(set) var childCoordinators: [Coordinator] = []
     
     private let window: UIWindow
@@ -24,6 +25,7 @@ final class AppCoordinator: Coordinator {
     
     func start() {
         let navigationController = UINavigationController()
+        navigationController.delegate = self
         let movieListCoordinator = MovieListCoordinator(navigationController: navigationController)
         childCoordinators.append(movieListCoordinator)
         movieListCoordinator.start()
@@ -31,5 +33,6 @@ final class AppCoordinator: Coordinator {
         window.makeKeyAndVisible()
     }
     
+    func childDidFinish(_ childCoordinator: Coordinator) {}
 
 }

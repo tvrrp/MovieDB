@@ -25,6 +25,7 @@ struct Movies: Decodable {
 }
 
 struct MoviePost: Decodable {
+    let backdrop_path: String?
     let genres: [Genre]
     let poster_path: String
     let overview: String

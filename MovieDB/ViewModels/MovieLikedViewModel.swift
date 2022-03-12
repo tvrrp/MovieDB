@@ -1,68 +1,64 @@
 //
-//  MovieListViewModel.swift
+//  MovieLikedViewModel.swift
 //  MovieDB
 //
-//  Created by Damir Yackupov on 04.03.2022.
+//  Created by Damir Yackupov on 12.03.2022.
 //
 
 import UIKit
 import Nuke
 
-final class MovieListViewModel: NSObject {
-
-    var coordinator: MovieListCoordinator?
+final class MovieLikedViewModel: NSObject {
+    
+    var coordinator: MovieLikedCoordinator?
     weak var collectionView: UICollectionView?
-
-    var movieList: [Movies?] = [Movies?](repeating: nil, count: 1)
+    
     let networkHelper = NetworkHelper()
     let prefetcher = ImagePrefetcher()
+    let coreDataManager: CoreDataManagerProtocol
+    
+    var movieID = [Int]()
+    var movieList = [MoviePost?]()
+    
+    init(coreDataManager: CoreDataManagerProtocol){
+        self.coreDataManager = coreDataManager
+    }
+    
+    func fetchLikedMovie() {
+        do {
+            let likedMovies = try coreDataManager.requestModels()
 
-    let title = "Movies"
-    let pageNumber = Array(1...500)
-
+            for item in 0..<likedMovies.count {
+                movieID.append(Int(likedMovies[item].id))
+            }
+            movieList = [MoviePost?](repeating: nil, count: movieID.count)
+        } catch {
+            print("No data")
+        }
+    }
+    
     func fetchMovies(ofIndex index: Int) {
 
-        if index > 499 {
-            return
-        }
+        let url = LikedMovieURL(movieID: String(movieID[index]))
 
-        let url = URLFactory(moviePageNumber: String(pageNumber[index]))
-
-        networkHelper.requestMovies(with: url.apiCallURL) { [weak self] result in
+        networkHelper.requestMoviePost(with: url.apiCallURL) { [weak self] result in
             switch result {
             case .failure(let error):
                 print(error)
                 print(url.apiCallURL)
             case .success(let result):
-
-                if index == 0 {
-                    self?.movieList = result.results
-                } else {
-                    self?.movieList.append(contentsOf: result.results)
-                }
+                
+                self?.movieList[index] = result
 
                 DispatchQueue.main.async {
-                    let start = ((self?.pageNumber[index])! * 20) - 20
-                    let end = (self?.movieList.count)!
-                    var indexPaths = [IndexPath]()
-                    
-                    for item in stride(from: start, to: end, by: 1) {
-                        let indexPath = IndexPath(row: item, section: 0)
-                        indexPaths.append(indexPath)
-                    }
-                    self?.collectionView?.insertItems(at: indexPaths)
+                    self?.collectionView?.reloadData()
                 }
             }
         }
     }
 
     private func cancelFetchMovies(ofIndex index: Int) {
-
-        if index > 499 {
-            return
-        }
-
-        let url = URLFactory(moviePageNumber: String(pageNumber[index]))
+        let url = LikedMovieURL(movieID: String(movieID[index]))
         networkHelper.cancelRequestMovies(with: url.apiCallURL)
     }
     
@@ -74,9 +70,9 @@ final class MovieListViewModel: NSObject {
         return adressToImage.urlToImage
     }
 
-    private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
+    private func loadImages(with model: MoviePost, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
         
-        cell.updateViewFromMovies(model: model)
+        cell.updateViewFromMoviesPost(model: model)
         guard let urlToImage = URL(string: getImageURL(index: indexPath.row)) else {
             cell.backdropPathImage.image = UIImage(systemName: "film")
             return }
@@ -90,12 +86,12 @@ final class MovieListViewModel: NSObject {
         let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
         prefetcher.startPrefetching(with: urls)
     }
-
-    func movieCellTapped(with index: Int) {
-        guard let post = movieList[index]?.id else { return }
-        coordinator?.startDetailVCPresent(with: post)
+    
+    func viewDidDisappear(_ movieLikedViewController: MovieLikedViewContoroller){
+        prefetcher.stopPrefetching()
+        coordinator?.didFinishMovieLiked(movieLikedViewController)
     }
-
+    
     func setupCollectionView() {
         collectionView?.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
         collectionView?.dataSource = self
@@ -103,21 +99,35 @@ final class MovieListViewModel: NSObject {
         collectionView?.prefetchDataSource = self
     }
     
+    func movieCellTapped(with index: Int) {
+        coordinator?.startDetailVCPresent(with: movieID[index])
+    }
+    
     func viewWillAppear() {
-        prefetcher.isPaused = false
+        var fetchedIDS = [Int]()
+        do {
+            let likedMovies = try coreDataManager.requestModels()
+            for item in 0..<likedMovies.count {
+                fetchedIDS.append(Int(likedMovies[item].id))
+            }
+        } catch {
+            print("No data")
+        }
+        
+        if fetchedIDS != movieID {
+            let difference = movieID.difference(from: fetchedIDS)
+            for item in 0..<difference.count {
+                let index = movieID.firstIndex(of: difference[item])
+                movieID.remove(at: index!)
+                movieList.remove(at: index!)
+                collectionView?.deleteItems(at: [IndexPath(row: index!, section: 0)])
+            }
+        }
+        
     }
-    
-    func viewWillDisappear(){
-        prefetcher.isPaused = true
-    }
-    
-    func showLikedViewController(){
-        coordinator?.startLikedVCPresent()
-    }
-
 }
 
-extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
+extension MovieLikedViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -131,9 +141,7 @@ extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelega
         if let model = movieList[indexPath.row] {
             self.loadImages(with: model, with: indexPath, with: cell)
         } else {
-            if Int(indexPath.row / 19) == 0 {
-                fetchMovies(ofIndex: 0)
-            }
+            fetchMovies(ofIndex: indexPath.row)
         }
         return cell
     }
@@ -144,17 +152,12 @@ extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelega
 
 }
 
-extension MovieListViewModel: UICollectionViewDataSourcePrefetching {
+extension MovieLikedViewModel: UICollectionViewDataSourcePrefetching {
 
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
         for indexPath in indexPaths {
-
-            if indexPath.row < 19 {
-                fetchMovies(ofIndex: 1)
-            } else {
-                fetchMovies(ofIndex: Int(indexPath.row / 19) + 1)
-            }
+            fetchMovies(ofIndex: indexPath.row)
         }
         prefetchImages(with: indexPaths)
     }
@@ -165,5 +168,13 @@ extension MovieListViewModel: UICollectionViewDataSourcePrefetching {
         }
         let urls = indexPaths.compactMap { URL(string: getImageURL(index: $0.row)) }
         prefetcher.stopPrefetching(with: urls)
+    }
+}
+
+extension Array where Element: Hashable {
+    func difference(from other: [Element]) -> [Element] {
+        let thisSet = Set(self)
+        let otherSet = Set(other)
+        return Array(thisSet.symmetricDifference(otherSet))
     }
 }

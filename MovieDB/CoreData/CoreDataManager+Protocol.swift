@@ -13,6 +13,6 @@ protocol CoreDataManagerProtocol {
                 withAction action: PersistentState,
              and completion: @escaping (Result<PersistentState, Error>) -> Void)
     
-    func requestModels() -> [LikedMovie]
+    func requestModels() throws -> [LikedMovie]
     func requestModels(withId id: Int) throws -> [LikedMovie]
 }

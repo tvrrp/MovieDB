@@ -11,13 +11,14 @@ final class MovieListCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
     
     private let navigationController: UINavigationController
+    private let movieListViewController = MovieListViewController()
+    
     
     init(navigationController: UINavigationController){
         self.navigationController = navigationController
     }
     
     func start() {
-        let movieListViewController = MovieListViewController()
         let movieListViewModel = MovieListViewModel()
         movieListViewModel.coordinator = self
         movieListViewController.viewModel = movieListViewModel
@@ -29,6 +30,14 @@ final class MovieListCoordinator: Coordinator {
         movieDetailCoordinator.parentCoordinator = self
         childCoordinators.append(movieDetailCoordinator)
         movieDetailCoordinator.start()
+    }
+    
+    func startLikedVCPresent(){
+        let movieLikedCoordinator = MovieLikedCoordinator(navigationController: navigationController)
+        childCoordinators.append(movieLikedCoordinator)
+        movieLikedCoordinator.parentCoordinator = self
+        movieLikedCoordinator.parentViewController = movieListViewController
+        movieLikedCoordinator.start()
     }
     
     func childDidFinish(_ childCoordinator: Coordinator){

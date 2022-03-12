@@ -62,12 +62,12 @@ extension CoreDataManager: CoreDataManagerProtocol {
         }
     }
     
-    func requestModels() -> [LikedMovie] {
+    func requestModels() throws -> [LikedMovie] {
         let request: NSFetchRequest<LikedMovie> = LikedMovie.fetchRequest()
         let sort = NSSortDescriptor(key: #keyPath(LikedMovie.currentDate), ascending: true)
         request.sortDescriptors = [sort]
         let likedMovies = try? manObjContext.fetch(request)
-        guard let likedMovie = likedMovies else { return [LikedMovie]() }
+        guard let likedMovie = likedMovies else { throw errorCase.noData }
         return likedMovie
     }
     

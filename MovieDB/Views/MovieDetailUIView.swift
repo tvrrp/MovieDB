@@ -28,7 +28,7 @@ class MovieDetailUIView: UIView {
     
     private lazy var movieRuntimeLabel: UILabel = {
         let label = UILabel()
-        label.text = "Длительность"
+        label.text = "Runtime"
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .thin)
         return label
@@ -64,7 +64,7 @@ class MovieDetailUIView: UIView {
     
     private lazy var movieGenresLabel: UILabel = {
         let label = UILabel()
-        label.text = "Жанр"
+        label.text = "Genre"
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .thin)
         return label
@@ -100,7 +100,7 @@ class MovieDetailUIView: UIView {
     
     private lazy var movieVoteLabel: UILabel = {
         let label = UILabel()
-        label.text = "Рейтинг"
+        label.text = "Vote"
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .thin)
         return label
@@ -190,7 +190,7 @@ class MovieDetailUIView: UIView {
         DispatchQueue.main.async { [self] in
             movieRuntimeValueLabel.text = runtimeValueFromInt(minutes: model.runtime)
             movieGenresValueLabel.text = model.genres[0].name
-            movieVoteValueLabel.text = String(model.vote_average)
+            movieVoteValueLabel.text = String("\(model.vote_average)/10")
             movieTitleLabel.text = model.title
             movieTaglineLabel.text = model.tagline
             movieOverviewLabel.text = model.overview

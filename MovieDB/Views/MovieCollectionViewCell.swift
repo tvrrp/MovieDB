@@ -65,25 +65,34 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
+    }    
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-    }
-    
-    
-    func updateViewFromModel(model: Movies){
+    func updateViewFromMovies(model: Movies?){
         
         let imageAttachment = NSTextAttachment()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
         imageAttachment.image = UIImage(systemName: "star.fill")?.withConfiguration(imageConfig).withTintColor(.systemYellow)
         let fullString = NSMutableAttributedString(string: "")
         fullString.append(NSAttributedString(attachment: imageAttachment))
-        fullString.append(NSAttributedString(string: " \(model.vote_average)/10"))
+        fullString.append(NSAttributedString(string: " \(model?.vote_average ?? 0)/10"))
         
-        titleLabel.text = model.title
+        titleLabel.text = model?.title ?? "No title"
         voteAverageLabel.attributedText = fullString
-        releaseDateLabel.text = model.release_date
+        releaseDateLabel.text = model?.release_date ?? ""
+    }
+    
+    func updateViewFromMoviesPost(model: MoviePost?){
+        
+        let imageAttachment = NSTextAttachment()
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 14)
+        imageAttachment.image = UIImage(systemName: "star.fill")?.withConfiguration(imageConfig).withTintColor(.systemYellow)
+        let fullString = NSMutableAttributedString(string: "")
+        fullString.append(NSAttributedString(attachment: imageAttachment))
+        fullString.append(NSAttributedString(string: " \(model?.vote_average ?? 0)/10"))
+        
+        titleLabel.text = model?.title ?? "No title"
+        voteAverageLabel.attributedText = fullString
+        releaseDateLabel.text = model?.release_date ?? ""
     }
     
     private func setupUI(){

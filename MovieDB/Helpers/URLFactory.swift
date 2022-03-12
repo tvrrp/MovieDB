@@ -9,7 +9,7 @@ import Foundation
 
 struct URLFactory {
     private let apiToken = "?api_key=b4224f0b04af00fb7e67ea6a31c530bd"
-    private let movieLanguage = "&language=ru-RU"
+    private let movieLanguage = "&language=en-US"
     private let moviePageNumber: String
     private let movieDBURL = "https://api.themoviedb.org/3/movie/popular"
     
@@ -19,6 +19,21 @@ struct URLFactory {
     
     init(moviePageNumber: String) {
         self.moviePageNumber = "&page=" + moviePageNumber
+    }
+}
+
+struct LikedMovieURL {
+    private let apiToken = "?api_key=b4224f0b04af00fb7e67ea6a31c530bd"
+    private let movieLanguage = "&language=en-US"
+    private let movieID: String
+    private let movieDBURL = "https://api.themoviedb.org/3/movie/"
+    
+    var apiCallURL: String {
+        return movieDBURL + movieID + apiToken + movieLanguage
+    }
+    
+    init(movieID: String) {
+        self.movieID = movieID
     }
 }
 
@@ -35,7 +50,7 @@ struct URLToPost {
     private let movieDBURL = "https://api.themoviedb.org/3/movie/"
     private let moviePostNumber: String
     private let apiToken = "?api_key=b4224f0b04af00fb7e67ea6a31c530bd"
-    private let movieLanguage = "&language=ru-RU"
+    private let movieLanguage = "&language=en-US"
     
     var apiCallURL: String {
         return movieDBURL + moviePostNumber + apiToken + movieLanguage
