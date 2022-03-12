@@ -12,6 +12,7 @@ final class MovieDetailCoordinator: Coordinator {
     var parentCoordinator: MovieListCoordinator?
     
     private let navigationController: UINavigationController
+    private let coreDataManager = CoreDataManager()
     
     let post: Int
     
@@ -22,7 +23,7 @@ final class MovieDetailCoordinator: Coordinator {
     
     func start() {
         let movieDetailViewContorller = MovieDetailViewController()
-        let movieDetailViewModel = MovieDetailViewModel(post: post)
+        let movieDetailViewModel = MovieDetailViewModel(post: post, coreDataManager: coreDataManager)
         movieDetailViewModel.coordinator = self
         movieDetailViewContorller.viewModel = movieDetailViewModel
         navigationController.pushViewController(movieDetailViewContorller, animated: true)

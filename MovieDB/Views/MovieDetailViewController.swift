@@ -10,6 +10,8 @@ import UIKit
 class MovieDetailViewController: UIViewController {
     
     var viewModel: MovieDetailViewModel!
+    private let coreDataManager = CoreDataManager()
+    let likedButtonImage = UIImage(systemName: "")
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let activity = UIActivityIndicatorView(style: .large)
@@ -40,9 +42,20 @@ class MovieDetailViewController: UIViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                     self?.setupUI()
                     self?.viewModel.loadImage()
+                    if self?.viewModel.checkIfLiked() == true {
+                        self?.updateBarButton(isLiked: true)
+                    } else { self?.updateBarButton(isLiked: false)}
                     self?.activityIndicator.stopAnimating()
                 })
             }
+        }
+    }
+    
+    private func updateBarButton (isLiked: Bool) {
+        if isLiked == true {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "suit.heart.fill"), style: .plain, target: self, action: #selector(likeMovieEvent))
+        } else {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "suit.heart"), style: .plain, target: self, action: #selector(likeMovieEvent))
         }
     }
     
@@ -60,12 +73,23 @@ class MovieDetailViewController: UIViewController {
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
-        
-        
+    }
+    
+    @objc func likeMovieEvent(){
+        if viewModel.checkIfLiked() == true {
+            viewModel.deleteLikedMovie()
+            updateBarButton(isLiked: false)
+        } else {
+            viewModel.writeLikedMovie()
+            updateBarButton(isLiked: true)
+        }
     }
     
 
     private func setupUI() {
+        
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "suit.heart"), style: .plain, target: self, action: #selector(likeMovieEvent))
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         viewModel.movieDetailView = contentView
