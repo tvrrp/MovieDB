@@ -39,12 +39,12 @@ class MovieDetailViewController: UIViewController {
         
         viewModel.fetchPost() { [weak self] (success) -> Void in
             if success {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                     self?.setupUI()
-                    self?.viewModel.loadImage()
                     if self?.viewModel.checkIfLiked() == true {
                         self?.updateBarButton(isLiked: true)
                     } else { self?.updateBarButton(isLiked: false)}
+                    self?.viewModel.loadImage()
                     self?.activityIndicator.stopAnimating()
                 })
             }

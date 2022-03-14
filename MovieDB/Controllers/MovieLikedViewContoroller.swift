@@ -1,62 +1,73 @@
 //
-//  MovieListViewController.swift
+//  MovieLikedViewContoroller.swift
 //  MovieDB
 //
-//  Created by Damir Yackupov on 04.03.2022.
+//  Created by Damir Yackupov on 12.03.2022.
 //
 
 import UIKit
 
-class MovieListViewController: UIViewController {
-
-    var viewModel: MovieListViewModel!
-
+class MovieLikedViewContoroller: UIViewController {
+    
+    var viewModel: MovieLikedViewModel!
     private var movieCollectionView: UICollectionView
-
+    private var noLikedView: ErrorUiView
+    
     init() {
         let movieCollectionViewLayout = UICollectionViewFlowLayout()
         movieCollectionView = UICollectionView(frame: .zero, collectionViewLayout: movieCollectionViewLayout)
+        noLikedView = ErrorUiView(frame: .zero, errorSFSymbolName: "heart.text.square", errorLabelText: "No liked movies")
         super.init(nibName: nil, bundle: nil)
         movieCollectionView.collectionViewLayout = makeCollectionViewLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = viewModel.title
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Liked", style: .plain, target: self, action: #selector(showLikedViewController))
-        setupUI()
+        viewModel.fetchLikedMovie { (bool) in
+            switch bool {
+            case true:
+                displayErrorView()
+                setupUI()
+            case false:
+                displayErrorView()
+            }
+        }
+        view.backgroundColor = .systemBackground
+        let leftBarButtonItem = UIBarButtonItem(title: "Movies", style: .plain, target: self, action: #selector(dismissLikedViewController))
+        self.parent?.navigationItem.leftBarButtonItem = leftBarButtonItem
     }
     
+    @objc func dismissLikedViewController() {
+        self.parent?.navigationItem.leftBarButtonItem = nil
+        self.parent?.navigationItem.rightBarButtonItem?.isEnabled = true
+        viewModel.viewDidDisappear(self)
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.parent?.navigationItem.rightBarButtonItem?.isEnabled = false
         viewModel.viewWillAppear()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Liked", style: .plain, target: self, action: #selector(showLikedViewController))
     }
     
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        viewModel.viewWillDisappear()
+    private func displayErrorView() {
+        view.addSubview(noLikedView)
+        noLikedView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            noLikedView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noLikedView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            noLikedView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
+            noLikedView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3)
+        ])
     }
-
-    @objc func showLikedViewController() {
-        viewModel.showLikedViewController()
-        navigationItem.rightBarButtonItem?.isEnabled = false
-    }
     
-//    @objc func dismissLikedViewController() {
-//        viewModel.dismissLikedViewController()
-//    }
-
 }
 
-extension MovieListViewController {
+extension MovieLikedViewContoroller {
 
     func setupUI() {
         viewModel.collectionView = movieCollectionView
@@ -79,7 +90,7 @@ extension MovieListViewController {
     }
 }
 
-extension MovieListViewController {
+extension MovieLikedViewContoroller {
 
     func makeGridLayoutSection() -> NSCollectionLayoutSection {
 

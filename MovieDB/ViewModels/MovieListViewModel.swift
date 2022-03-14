@@ -7,8 +7,10 @@
 
 import UIKit
 import Nuke
+import Network
 
-final class MovieListViewModel: NSObject {
+final class MovieListViewModel: NSObject, NetworkCheckObserver {
+
 
     var coordinator: MovieListCoordinator?
     weak var collectionView: UICollectionView?
@@ -20,7 +22,26 @@ final class MovieListViewModel: NSObject {
     let title = "Movies"
     let pageNumber = Array(1...500)
 
+    func checkForConnection(completion: (_ success: Bool) -> Void) {
+        
+            if NetworkMonitor.sharedInstance().currentStatus == .satisfied {
+                completion(true)
+            } else {
+                completion(false)
+            }
+            NetworkMonitor.sharedInstance().addObserver(observer: self)
+        
+    }
+
+    func statusDidChange(status: NWPath.Status) {
+        if status == .satisfied {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "Connection satisfied"), object: nil)
+        }
+        
+    }
+
     func fetchMovies(ofIndex index: Int) {
+
 
         if index > 499 {
             return
@@ -45,7 +66,7 @@ final class MovieListViewModel: NSObject {
                     let start = ((self?.pageNumber[index])! * 20) - 20
                     let end = (self?.movieList.count)!
                     var indexPaths = [IndexPath]()
-                    
+
                     for item in stride(from: start, to: end, by: 1) {
                         let indexPath = IndexPath(row: item, section: 0)
                         indexPaths.append(indexPath)
@@ -65,7 +86,7 @@ final class MovieListViewModel: NSObject {
         let url = URLFactory(moviePageNumber: String(pageNumber[index]))
         networkHelper.cancelRequestMovies(with: url.apiCallURL)
     }
-    
+
     private func getImageURL(index: Int) -> String {
         guard let url = movieList[index]?.backdrop_path else {
             return ""
@@ -75,7 +96,7 @@ final class MovieListViewModel: NSObject {
     }
 
     private func loadImages(with model: Movies, with indexPath: IndexPath, with cell: MovieCollectionViewCell) {
-        
+
         cell.updateViewFromMovies(model: model)
         guard let urlToImage = URL(string: getImageURL(index: indexPath.row)) else {
             cell.backdropPathImage.image = UIImage(systemName: "film")
@@ -102,16 +123,16 @@ final class MovieListViewModel: NSObject {
         collectionView?.delegate = self
         collectionView?.prefetchDataSource = self
     }
-    
+
     func viewWillAppear() {
         prefetcher.isPaused = false
     }
-    
-    func viewWillDisappear(){
+
+    func viewWillDisappear() {
         prefetcher.isPaused = true
     }
-    
-    func showLikedViewController(){
+
+    func showLikedViewController() {
         coordinator?.startLikedVCPresent()
     }
 
@@ -120,7 +141,7 @@ final class MovieListViewModel: NSObject {
 extension MovieListViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
+
         return movieList.count
     }
 

@@ -1,54 +1,96 @@
 //
-//  MovieLikedViewContoroller.swift
+//  MovieListViewController.swift
 //  MovieDB
 //
-//  Created by Damir Yackupov on 12.03.2022.
+//  Created by Damir Yackupov on 04.03.2022.
 //
 
 import UIKit
 
-class MovieLikedViewContoroller: UIViewController {
-    
-    var viewModel: MovieLikedViewModel!
+class MovieListViewController: UIViewController {
+
+    var viewModel: MovieListViewModel!
+
     private var movieCollectionView: UICollectionView
-    
+    private var noConnectionView: ErrorUiView
+
     init() {
         let movieCollectionViewLayout = UICollectionViewFlowLayout()
         movieCollectionView = UICollectionView(frame: .zero, collectionViewLayout: movieCollectionViewLayout)
+        noConnectionView = ErrorUiView(frame: .zero, errorSFSymbolName: "wifi.slash", errorLabelText: "No Internet Connection")
         super.init(nibName: nil, bundle: nil)
         movieCollectionView.collectionViewLayout = makeCollectionViewLayout()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchLikedMovie()
-        setupUI()
+        
         view.backgroundColor = .systemBackground
-        let leftBarButtonItem = UIBarButtonItem(title: "Movies", style: .plain, target: self, action: #selector(dismissLikedViewController))
-        self.parent?.navigationItem.leftBarButtonItem = leftBarButtonItem
+        navigationItem.title = viewModel.title
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(connectionRestored), name: NSNotification.Name(rawValue: "Connection satisfied"), object: nil)
+        
+        viewModel.checkForConnection { Bool in
+            switch Bool{
+            case true:
+                setupUI()
+            case false:
+                showNoConnectionView()
+            }
+        }
+       
+        
     }
     
-    @objc func dismissLikedViewController() {
-        self.parent?.navigationItem.leftBarButtonItem = nil
-        self.parent?.navigationItem.rightBarButtonItem?.isEnabled = true
-        viewModel.viewDidDisappear(self)
+    @objc func connectionRestored() {
+        noConnectionView.removeFromSuperview()
+        setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.parent?.navigationItem.rightBarButtonItem?.isEnabled = false
         viewModel.viewWillAppear()
     }
     
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel.viewWillDisappear()
+    }
+
+    @objc func showLikedViewController() {
+        viewModel.showLikedViewController()
+        navigationItem.rightBarButtonItem?.isEnabled = false
+    }
+    
+    private func showNoConnectionView() {
+
+        view.addSubview(noConnectionView)
+        noConnectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            noConnectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noConnectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            noConnectionView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
+            noConnectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3)
+        ])
+    }
+
 }
 
-extension MovieLikedViewContoroller {
+extension MovieListViewController {
 
     func setupUI() {
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Liked", style: .plain, target: self, action: #selector(showLikedViewController))
+        
+        
         viewModel.collectionView = movieCollectionView
         movieCollectionView.translatesAutoresizingMaskIntoConstraints = false
         movieCollectionView.showsVerticalScrollIndicator = false
@@ -69,7 +111,7 @@ extension MovieLikedViewContoroller {
     }
 }
 
-extension MovieLikedViewContoroller {
+extension MovieListViewController {
 
     func makeGridLayoutSection() -> NSCollectionLayoutSection {
 
@@ -110,4 +152,3 @@ extension MovieLikedViewContoroller {
 
     }
 }
-

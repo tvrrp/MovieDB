@@ -24,16 +24,21 @@ final class MovieLikedViewModel: NSObject {
         self.coreDataManager = coreDataManager
     }
     
-    func fetchLikedMovie() {
+    func fetchLikedMovie(completion: (Bool) -> Void) {
         do {
             let likedMovies = try coreDataManager.requestModels()
 
             for item in 0..<likedMovies.count {
                 movieID.append(Int(likedMovies[item].id))
             }
-            movieList = [MoviePost?](repeating: nil, count: movieID.count)
+            if likedMovies.count != 0 {
+                movieList = [MoviePost?](repeating: nil, count: movieID.count)
+                completion(true)
+            } else {
+                completion(false)
+            }
         } catch {
-            print("No data")
+            completion(false)
         }
     }
     
@@ -123,7 +128,9 @@ final class MovieLikedViewModel: NSObject {
                 collectionView?.deleteItems(at: [IndexPath(row: index!, section: 0)])
             }
         }
-        
+        if movieID.count == 0 {
+            collectionView?.removeFromSuperview()
+        }
     }
 }
 
