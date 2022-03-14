@@ -30,8 +30,12 @@ final class NetworkHelper {
         }) != nil {
             return
         }
+        
+        let config = URLSessionConfiguration.default
+        config.waitsForConnectivity = true
+        config.timeoutIntervalForResource = 10
 
-        let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
+        let dataTask = URLSession(configuration: config).dataTask(with: url) { data, response, error in
             
             
             if let error = error {

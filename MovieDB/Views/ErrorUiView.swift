@@ -23,6 +23,8 @@ class ErrorUiView: UIView {
         let label = UILabel()
         label.textAlignment = .center
         label.text = errorLabelText
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         return label
     }()
     

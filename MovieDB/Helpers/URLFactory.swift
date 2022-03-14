@@ -56,8 +56,8 @@ struct URLToPost {
         return movieDBURL + moviePostNumber + apiToken + movieLanguage
     }
     
-    init(moviePageNumber: String) {
-        self.moviePostNumber = moviePageNumber
+    init(moviePostNumber: String) {
+        self.moviePostNumber = moviePostNumber
     }
 }
 

@@ -16,7 +16,7 @@ class MovieLikedViewContoroller: UIViewController {
     init() {
         let movieCollectionViewLayout = UICollectionViewFlowLayout()
         movieCollectionView = UICollectionView(frame: .zero, collectionViewLayout: movieCollectionViewLayout)
-        noLikedView = ErrorUiView(frame: .zero, errorSFSymbolName: "heart.text.square", errorLabelText: "No liked movies")
+        noLikedView = ErrorUiView(frame: .zero, errorSFSymbolName: "heart.text.square", errorLabelText: "Here will be displayed your liked movies")
         super.init(nibName: nil, bundle: nil)
         movieCollectionView.collectionViewLayout = makeCollectionViewLayout()
     }

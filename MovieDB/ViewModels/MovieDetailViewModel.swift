@@ -27,7 +27,7 @@ final class MovieDetailViewModel {
 
     func fetchPost(completion: @escaping (_ success: Bool) -> Void) {
 
-        let url = URLToPost(moviePageNumber: String(post))
+        let url = URLToPost(moviePostNumber: String(post))
 
         networkHelper.requestMoviePost(with: url.apiCallURL) { [weak self] result in
             switch result {

@@ -22,15 +22,16 @@ final class MovieListViewModel: NSObject, NetworkCheckObserver {
     let title = "Movies"
     let pageNumber = Array(1...500)
 
-    func checkForConnection(completion: (_ success: Bool) -> Void) {
+    func checkForConnection(completion: @escaping (_ success: Bool) -> Void) {
+        NetworkMonitor.sharedInstance().addObserver(observer: self)
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             if NetworkMonitor.sharedInstance().currentStatus == .satisfied {
                 completion(true)
             } else {
                 completion(false)
             }
-            NetworkMonitor.sharedInstance().addObserver(observer: self)
-        
+        }
     }
 
     func statusDidChange(status: NWPath.Status) {

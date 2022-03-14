@@ -36,12 +36,12 @@ class MovieListViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(connectionRestored), name: NSNotification.Name(rawValue: "Connection satisfied"), object: nil)
         
-        viewModel.checkForConnection { Bool in
+        viewModel.checkForConnection { [weak self] Bool in
             switch Bool{
             case true:
-                setupUI()
+                self?.setupUI()
             case false:
-                showNoConnectionView()
+                self?.showNoConnectionView()
             }
         }
        

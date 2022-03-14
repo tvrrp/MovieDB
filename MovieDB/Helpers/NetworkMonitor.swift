@@ -19,7 +19,6 @@ class NetworkMonitor {
 
     private static let shared = NetworkMonitor()
     private var monitor = NWPathMonitor()
-//    public private(set) var isConnected: Bool = false
     
     private var observations = [ObjectIdentifier: NetworkChangeObservation]()
     var currentStatus: NWPath.Status {
@@ -47,15 +46,10 @@ class NetworkMonitor {
                 })
             }
         }
-//        monitor.start(queue: DispatchQueue.global(qos: .background))
     }
     
     public func startMonitoring() {
         monitor.start(queue: DispatchQueue.global(qos: .background))
-//        monitor.pathUpdateHandler = {[weak self] path in
-//            self?.isConnected = path.status != .unsatisfied
-//          //  print(self?.isConnected)
-//        }
     }
 
     func addObserver(observer: NetworkCheckObserver) {

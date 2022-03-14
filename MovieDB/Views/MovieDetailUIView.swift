@@ -201,7 +201,7 @@ class MovieDetailUIView: UIView {
     private func runtimeValueFromInt(minutes: Int) -> String {
         let h = minutes / 60
         let min = minutes % 60
-        return "\(h) ч \(min) мин"
+        return "\(h) h \(min) min"
     }
 
 }
